@@ -121,6 +121,8 @@ def create_game() -> tuple[Response, int]:
     """
     try:
         data = request.get_json()
+        if not isinstance(data, dict):
+            return jsonify({"error": "Request body must be a JSON object"}), 400
         
         # Validate required fields
         required_fields = ['title', 'description', 'publisher_id', 'category_id']
