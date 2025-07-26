@@ -241,6 +241,75 @@ class TestGamesRoutes(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(data['error'], "Game not found")
 
+    def test_update_game_invalid_title(self) -> None:
+        """Test updating a game with an invalid title"""
+        # Arrange - Get an existing game
+        response = self.client.get(self.GAMES_API_PATH)
+        games = self._get_response_data(response)
+        game_id = games[0]['id']
+
+        # Act - Try to update with too short title
+        update_data = {
+            "title": "A"  # Too short, minimum is 2 characters
+        }
+        response = self.client.put(f'{self.GAMES_API_PATH}/{game_id}', json=update_data)
+        data = self._get_response_data(response)
+
+        # Assert
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('error', data)
+        self.assertIn('Game title', data['error'])
+
+    def test_update_game_invalid_description(self) -> None:
+        """Test updating a game with an invalid description"""
+        # Arrange - Get an existing game
+        response = self.client.get(self.GAMES_API_PATH)
+        games = self._get_response_data(response)
+        game_id = games[0]['id']
+
+        # Act - Try to update with too short description
+        update_data = {
+            "description": "Too short"  # Too short, minimum is 10 characters
+        }
+        response = self.client.put(f'{self.GAMES_API_PATH}/{game_id}', json=update_data)
+        data = self._get_response_data(response)
+
+        # Assert
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('error', data)
+        self.assertIn('Description', data['error'])
+
+    def test_update_game_invalid_relationships(self) -> None:
+        """Test updating a game with invalid publisher or category IDs"""
+        # Arrange - Get an existing game
+        response = self.client.get(self.GAMES_API_PATH)
+        games = self._get_response_data(response)
+        game_id = games[0]['id']
+
+        # Act - Try to update with non-existent publisher
+        update_data = {
+            "publisher_id": 999  # Non-existent publisher
+        }
+        response = self.client.put(f'{self.GAMES_API_PATH}/{game_id}', json=update_data)
+        data = self._get_response_data(response)
+
+        # Assert
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('error', data)
+        self.assertEqual(data['error'], "Invalid publisher_id")
+
+        # Act - Try to update with non-existent category
+        update_data = {
+            "category_id": 999  # Non-existent category
+        }
+        response = self.client.put(f'{self.GAMES_API_PATH}/{game_id}', json=update_data)
+        data = self._get_response_data(response)
+
+        # Assert
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('error', data)
+        self.assertEqual(data['error'], "Invalid category_id")
+
     def test_delete_game_success(self) -> None:
         """Test successful deletion of a game"""
         # Arrange - Get an existing game
