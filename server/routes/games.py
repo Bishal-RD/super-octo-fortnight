@@ -195,7 +195,7 @@ def update_game(id: int) -> tuple[Response, int]:
             game.description = data['description']
         if 'publisher_id' in data:
             if not db.session.get(Publisher, data['publisher_id']):
-                return jsonify({"error": "Invalid publisher_id"}), 400
+                return jsonify({"error": f"Publisher with id {data['publisher_id']} not found"}), 400
             game.publisher_id = data['publisher_id']
         if 'category_id' in data:
             if not db.session.get(Category, data['category_id']):
