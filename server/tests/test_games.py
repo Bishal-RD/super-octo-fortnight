@@ -296,7 +296,7 @@ class TestGamesRoutes(unittest.TestCase):
         # Assert
         self.assertEqual(response.status_code, 400)
         self.assertIn('error', data)
-        self.assertEqual(data['error'], "Invalid publisher_id")
+        self.assertEqual(data['error'], "Publisher with id 999 not found")
 
         # Act - Try to update with non-existent category
         update_data = {
