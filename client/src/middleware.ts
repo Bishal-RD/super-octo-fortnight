@@ -1,10 +1,44 @@
-import { defineMiddleware } from "astro:middleware";
+/**
+ * API Request Middleware Module
+ * 
+ * This module provides middleware functionality for the Astro application to handle
+ * API requests by proxying them to the backend server. It supports all HTTP methods
+ * and handles errors gracefully.
+ * 
+ * @module middleware
+ */
 
-// Get server URL from environment variable with fallback for local development
+import type { APIContext } from 'astro';
+import { defineMiddleware } from 'astro/middleware';
+
+/**
+ * The URL of the API server. Uses environment variable if set, otherwise defaults
+ * to localhost for development.
+ */
 const API_SERVER_URL = process.env.API_SERVER_URL || 'http://localhost:5100';
 
-// Middleware to handle API requests
-export const onRequest = defineMiddleware(async (context, next) => {
+/**
+ * Middleware function to handle API requests by forwarding them to the backend server.
+ * 
+ * This middleware intercepts all requests that include '/api/' in their URL and
+ * forwards them to the backend server. Other requests are passed through to regular
+ * Astro handling.
+ * 
+ * @param {APIContext} context - The middleware context containing request information
+ * @param {() => Promise<Response>} next - The next middleware function in the chain
+ * @returns {Promise<Response>} The response from the API server or an error response
+ * 
+ * @example
+ * // Example API request that will be forwarded:
+ * fetch('/api/games')
+ * 
+ * // Example non-API request that will be handled by Astro:
+ * fetch('/about')
+ */
+export const onRequest = defineMiddleware(async (
+  context: APIContext,
+  next: () => Promise<Response>
+) => {
   
   // Guard clause: if not an API request, pass through to regular Astro handling
   if (!context.request.url.includes('/api/')) {
