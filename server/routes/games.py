@@ -199,7 +199,7 @@ def update_game(id: int) -> tuple[Response, int]:
             game.publisher_id = data['publisher_id']
         if 'category_id' in data:
             if not db.session.get(Category, data['category_id']):
-                return jsonify({"error": "Invalid category_id"}), 400
+                return jsonify({"error": f"Category with id {data['category_id']} not found"}), 400
             game.category_id = data['category_id']
         if 'star_rating' in data:
             game.star_rating = data['star_rating']
